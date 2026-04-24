@@ -1,0 +1,50 @@
+# .gitignore - Git忽略文件配置
+
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
+# 凭证和密钥
+credentials/
+secrets/
+*.key
+*.pem
+kubeconfig
+
+# 依赖包
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+node_modules/
+venv/
+env/
+
+# 构建输出
+build/
+dist/
+*.egg-info/
+.Python
+
+# IDE配置
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS特定文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+temp/
+tmp/
+*.tmp
+
+# Docker相关
+.dockerignore
+
+# 构建输出
+rendered/

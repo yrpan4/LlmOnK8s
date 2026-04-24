@@ -1,0 +1,38 @@
+[
+  {
+    "tenant_id": "tenant-a",
+    "display_name": "Tenant A",
+    "description": "租户 A 默认走 vLLM API，可切换回 tenant-a RayService。",
+    "api_token": "${TENANT_A_TOKEN}",
+    "namespace": "tenant-a",
+    "inference_mode": "api",
+    "api_url": "${VLLM_API_URL}",
+    "llm_api_token": "${VLLM_API_TOKEN}",
+    "model_name": "${VLLM_MODEL_NAME}",
+    "api_concurrency": 5,
+    "inference_url": "http://qwen-rayservice-serve-svc.tenant-a.svc.cluster.local:8000/generate",
+    "inference_batch_url": "http://qwen-rayservice-serve-svc.tenant-a.svc.cluster.local:8000/batch_generate",
+    "metrics_url": "http://qwen-rayservice-serve-svc.tenant-a.svc.cluster.local:8000/metrics",
+    "system_prompt": "你是 Tenant A 的企业问答助手，请用简洁中文回答。",
+    "temperature": 0.2,
+    "max_tokens": 512
+  },
+  {
+    "tenant_id": "tenant-b",
+    "display_name": "Tenant B",
+    "description": "租户 B 默认走 vLLM API，可切换回 tenant-b RayService。",
+    "api_token": "${TENANT_B_TOKEN}",
+    "namespace": "tenant-b",
+    "inference_mode": "api",
+    "api_url": "${VLLM_API_URL}",
+    "llm_api_token": "${VLLM_API_TOKEN}",
+    "model_name": "${VLLM_MODEL_NAME}",
+    "api_concurrency": 5,
+    "inference_url": "http://qwen-rayservice-serve-svc.tenant-b.svc.cluster.local:8000/generate",
+    "inference_batch_url": "http://qwen-rayservice-serve-svc.tenant-b.svc.cluster.local:8000/batch_generate",
+    "metrics_url": "http://qwen-rayservice-serve-svc.tenant-b.svc.cluster.local:8000/metrics",
+    "system_prompt": "你是 Tenant B 的企业知识问答助手，请优先输出条目化答案。",
+    "temperature": 0.3,
+    "max_tokens": 512
+  }
+]

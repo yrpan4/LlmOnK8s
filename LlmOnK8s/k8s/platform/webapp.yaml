@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen-webapp
+  namespace: platform
+  labels:
+    app: qwen-webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qwen-webapp
+  template:
+    metadata:
+      labels:
+        app: qwen-webapp
+    spec:
+      imagePullSecrets:
+        - name: aliyun-registry-secret
+      containers:
+        - name: webapp
+
+          image: ${WEBAPP_IMAGE}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: TENANT_CONFIG_FILE
+              value: /app/secrets/tenants.json
+            - name: STATIC_DIR
+              value: /app/static
+            - name: INFERENCE_TIMEOUT_SECONDS
+              value: "180"
+          volumeMounts:
+            - name: tenant-routing-config
+              mountPath: /app/secrets
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: tenant-routing-config
+          secret:
+            secretName: tenant-routing-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen-webapp
+  namespace: platform
+  labels:
+    app: qwen-webapp
+spec:
+  type: LoadBalancer
+  selector:
+    app: qwen-webapp
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

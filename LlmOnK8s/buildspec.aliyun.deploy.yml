@@ -1,0 +1,42 @@
+version: 0.1
+
+# 阿里云流水线部署配置
+# 用于在阿里云流水线中自动部署到ACK集群
+
+trigger:
+  type: push
+  branches:
+    - main
+
+env:
+  variables:
+    # 需要在流水线中设置这些变量
+    ALIYUN_REGION: ${{ secrets.ALIYUN_REGION }}
+    ACK_CLUSTER_ID: ${{ secrets.ACK_CLUSTER_ID }}
+    ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
+    ALIYUN_NAMESPACE: ${{ secrets.ALIYUN_NAMESPACE }}
+    ACR_WEBAPP_REPO: ${{ secrets.ACR_WEBAPP_REPO }}
+    ACR_INFERENCE_REPO: ${{ secrets.ACR_INFERENCE_REPO }}
+    ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+    ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+    ALIYUN_REGISTRY_USERNAME: ${{ secrets.ALIYUN_REGISTRY_USERNAME }}
+    ALIYUN_REGISTRY_PASSWORD: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+    MODEL_ID: ${{ secrets.MODEL_ID }}
+    IMAGE_TAG: ${{ env.GIT_COMMIT }}
+
+stages:
+  - stage: Deploy
+    jobs:
+      - job: DeployToACK
+        pool:
+          vmImage: ubuntu-latest
+        
+        steps:
+          - checkout: self
+          
+          - step: DeployToACK
+            displayName: 部署到阿里云ACK
+            script: |
+              set -euo pipefail
+              chmod +x scripts/aliyun-deploy.sh
+              ./scripts/aliyun-deploy.sh

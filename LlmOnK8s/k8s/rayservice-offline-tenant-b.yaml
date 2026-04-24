@@ -1,0 +1,111 @@
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: qwen-rayservice
+  namespace: tenant-b
+  labels:
+    app: qwen-rayservice
+    tenant: tenant-b
+spec:
+  serveConfigV2: |
+    applications:
+      - name: qwen-chat
+        route_prefix: /
+        import_path: serve_app:deployment
+        deployments:
+          - name: QwenVLLMDeployment
+            num_replicas: 1
+            max_concurrent_queries: 50
+            health_check_period_s: 10
+            health_check_timeout_s: 30
+            ray_actor_options:
+              num_cpus: 4
+              num_gpus: 1
+  rayClusterConfig:
+    rayVersion: "2.46.0"
+    headGroupSpec:
+      serviceType: ClusterIP
+      rayStartParams:
+        dashboard-host: 0.0.0.0
+      template:
+        metadata:
+          labels:
+            app: qwen-ray-head
+            tenant: tenant-b
+        spec:
+          nodeSelector:
+            workload: gpu-compute
+          tolerations:
+            - key: workload
+              operator: Equal
+              value: gpu-compute
+              effect: NoExecute
+            - key: nvidia.com/gpu
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
+          containers:
+            - name: ray-head
+              # 使用本地预加载的镜像 - 不从仓库拉取
+              image: rayproject/ray:2.46.0-py311-gpu
+              imagePullPolicy: Never  # 关键：使用本地缓存镜像
+              ports:
+                - containerPort: 6379
+                  name: gcs
+                - containerPort: 8265
+                  name: dashboard
+                - containerPort: 10001
+                  name: client
+                - containerPort: 8000
+                  name: serve
+              resources:
+                limits:
+                  cpu: "2"
+                  memory: "4Gi"
+                  nvidia.com/gpu: "1"
+                requests:
+                  cpu: "2"
+                  memory: "4Gi"
+                  nvidia.com/gpu: "1"
+    workerGroupSpecs:
+      - groupName: gpu-workers
+        replicas: 1
+        minReplicas: 1
+        maxReplicas: 1
+        numOfHosts: 1
+        template:
+          metadata:
+            labels:
+              app: qwen-ray-worker
+              tenant: tenant-b
+          spec:
+            nodeSelector:
+              workload: gpu-compute
+            tolerations:
+              - key: workload
+                operator: Equal
+                value: gpu-compute
+                effect: NoExecute
+              - key: nvidia.com/gpu
+                operator: Equal
+                value: "true"
+                effect: NoSchedule
+            containers:
+              - name: ray-worker
+                # 使用本地预加载的镜像
+                image: rayproject/ray:2.46.0-py311-gpu
+                imagePullPolicy: Never  # 关键：使用本地缓存镜像
+                env:
+                  - name: RAY_SERVICE_NAME
+                    value: qwen-rayservice
+                  - name: TENSOR_PARALLEL_SIZE
+                    value: "1"
+                resources:
+                  limits:
+                    cpu: "4"
+                    memory: "16Gi"
+                    nvidia.com/gpu: "1"
+                  requests:
+                    cpu: "4"
+                    memory: "16Gi"
+                    nvidia.com/gpu: "1"

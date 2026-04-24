@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qwen on EKS · 多租户问答</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero card">
+        <p class="eyebrow">Amazon EKS · Ray on K8s · vLLM</p>
+        <h1>Qwen 多租户问答演示</h1>
+        <p class="subtext">
+          前端通过公网 LoadBalancer 暴露，后端网关根据租户令牌路由到各自命名空间中的
+          `RayService` 推理服务。
+        </p>
+      </section>
+
+      <section class="card controls">
+        <div class="field">
+          <label for="tenant">租户</label>
+          <select id="tenant"></select>
+          <small id="tenant-description"></small>
+        </div>
+        <div class="field">
+          <label for="tenant-token">租户令牌</label>
+          <input id="tenant-token" type="password" placeholder="输入租户访问令牌" />
+        </div>
+        <div class="field wide">
+          <label for="question">问题</label>
+          <textarea id="question" rows="4" placeholder="例如：请用三句话解释什么是 RayService？"></textarea>
+        </div>
+        <button id="send">发送问题</button>
+      </section>
+
+      <section class="card result">
+        <div class="result-header">
+          <h2>回答</h2>
+          <span id="status">等待请求</span>
+        </div>
+        <pre id="answer">尚未发起请求。</pre>
+        <div id="meta" class="meta"></div>
+      </section>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

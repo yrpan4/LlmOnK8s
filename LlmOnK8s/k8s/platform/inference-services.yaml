@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen-rayservice-serve-svc
+  namespace: tenant-a
+  labels:
+    app: qwen-rayservice
+    tenant: tenant-a
+spec:
+  type: ClusterIP
+  selector:
+    app: qwen-ray-head
+    tenant: tenant-a
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen-rayservice-serve-svc
+  namespace: tenant-b
+  labels:
+    app: qwen-rayservice
+    tenant: tenant-b
+spec:
+  type: ClusterIP
+  selector:
+    app: qwen-ray-head
+    tenant: tenant-b
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000

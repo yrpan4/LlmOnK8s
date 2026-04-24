@@ -1,0 +1,39 @@
+version: 0.1
+
+# 阿里云流水线构建配置
+# 用于在阿里云流水线中自动构建Docker镜像并推送到ACR
+
+trigger:
+  type: push
+  branches:
+    - main
+    - develop
+
+env:
+  variables:
+    # 需要在流水线中设置这些变量
+    ALIYUN_REGION: ${{ secrets.ALIYUN_REGION }}
+    ALIYUN_REGISTRY: ${{ secrets.ALIYUN_REGISTRY }}
+    ALIYUN_NAMESPACE: ${{ secrets.ALIYUN_NAMESPACE }}
+    ACR_WEBAPP_REPO: ${{ secrets.ACR_WEBAPP_REPO }}
+    ACR_INFERENCE_REPO: ${{ secrets.ACR_INFERENCE_REPO }}
+    ALIYUN_REGISTRY_USERNAME: ${{ secrets.ALIYUN_REGISTRY_USERNAME }}
+    ALIYUN_REGISTRY_PASSWORD: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+    IMAGE_TAG: ${{ env.GIT_COMMIT }}
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildAndPush
+        pool:
+          vmImage: ubuntu-latest
+        
+        steps:
+          - checkout: self
+          
+          - step: BuildDockerImage
+            displayName: 构建Docker镜像
+            script: |
+              set -euo pipefail
+              chmod +x scripts/aliyun-build-and-push.sh
+              ./scripts/aliyun-build-and-push.sh

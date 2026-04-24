@@ -1,0 +1,37 @@
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "nodeSelector": {
+          "workload": "gpu-compute"
+        },
+        "tolerations": [
+          {
+            "key": "workload",
+            "operator": "Equal",
+            "value": "gpu-compute",
+            "effect": "NoExecute"
+          },
+          {
+            "key": "nvidia.com/gpu",
+            "operator": "Equal",
+            "value": "true",
+            "effect": "NoSchedule"
+          },
+          {
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          },
+          {
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          }
+        ]
+      }
+    }
+  }
+}

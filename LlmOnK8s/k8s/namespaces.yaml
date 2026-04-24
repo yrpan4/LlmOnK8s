@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kuberay-system
+  labels:
+    name: kuberay-system
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform
+  labels:
+    name: platform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tenant-a
+  labels:
+    name: tenant-a
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tenant-b
+  labels:
+    name: tenant-b
